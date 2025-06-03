@@ -1,0 +1,126 @@
+﻿using EcoinverHub_api.Data;
+using EcoinverHub_api.Models;
+using EcoinverHub_api.Models.Dto.Create;
+using EcoinverHub_api.Models.Dto.Update;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace EcoinverHub_api.Controllers
+{
+
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UserController : ControllerBase
+
+    {
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly AppDbContext _context;
+        public UserController(UserManager<ApplicationUser> userManager, AppDbContext context)
+        {
+            _userManager = userManager;
+            _context = context;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUsuarios()
+        {
+            // Traemos los usuarios incluyendo el rol para evitar muchas consultas
+            var usuarios = await _context.Users.Include(u => u.Role).ToListAsync();
+
+            var listaUsuarios = usuarios.Select(user => new
+            {
+                user.Id,
+                user.UserName,
+                user.Email,
+                Roles = user.Role.Name // Lista con un solo rol, o vacía si null
+            });
+
+            return Ok(listaUsuarios);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> crearUsuario(CreateUsuarioDto dto)
+        {
+            // Verificar si usuario ya existe
+            var usuarioExistente = await _userManager.FindByNameAsync(dto.UserName);
+            if (usuarioExistente != null)
+                return BadRequest(new { message = "El usuario ya existe" });
+
+            // Validar que el rol exista en la base
+            var rol = await _context.Set<ApplicationRole>().FindAsync(dto.RoleId);
+            if (rol == null)
+                return BadRequest(new { message = "El rol especificado no existe" });
+
+            var user = new ApplicationUser
+            {
+                UserName = dto.UserName,
+                Email = dto.Email,
+                RoleId = dto.RoleId,
+                CreatedAt = DateTime.Now
+            };
+
+            var resultado = await _userManager.CreateAsync(user, dto.Password);
+            if (!resultado.Succeeded)
+                return BadRequest(resultado.Errors);
+
+            return Ok(new { message = "Usuario creado correctamente", user.Id, user.UserName, Role = rol.Name });
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUsuario(int id, UpdateUsuarioDto dto)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+                return NotFound();
+
+            // Actualizar campos si vienen en dto
+            if (!string.IsNullOrEmpty(dto.UserName))
+                user.UserName = dto.UserName;
+
+            if (!string.IsNullOrEmpty(dto.Email))
+                user.Email = dto.Email;
+
+            if (dto.RoleId.HasValue)
+            {
+                var role = await _context.Set<ApplicationRole>().FindAsync(dto.RoleId.Value);
+                if (role == null)
+                    return BadRequest(new { message = "Rol no encontrado" });
+
+                user.RoleId = dto.RoleId.Value;
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            // Si se quiere cambiar contraseña (opcional y separado preferiblemente)
+            if (!string.IsNullOrEmpty(dto.Password))
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var passResult = await _userManager.ResetPasswordAsync(user, token, dto.Password);
+                if (!passResult.Succeeded)
+                    return BadRequest(passResult.Errors);
+            }
+
+            return Ok(new { message = "Usuario actualizado" });
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            var usuario = await _userManager.FindByIdAsync(id.ToString());
+            if (usuario==null)
+            {
+                return NotFound(new { message = "No se ha encontado el usuario" });
+            }
+
+            var result = await _userManager.DeleteAsync(usuario);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+            return Ok(new {message="Se ha eliminado correctamentre el usuario"});
+        }
+    }
+}
