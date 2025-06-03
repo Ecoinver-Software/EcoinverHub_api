@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35913.81 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EcoinverHub_api", "EcoinverHub_api\EcoinverHub_api.csproj", "{B3C47274-6F06-44BB-9226-97B0286B6D81}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B3C47274-6F06-44BB-9226-97B0286B6D81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3C47274-6F06-44BB-9226-97B0286B6D81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3C47274-6F06-44BB-9226-97B0286B6D81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3C47274-6F06-44BB-9226-97B0286B6D81}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1172928D-3068-47B4-9CE2-9CBFE9E8D373}
+	EndGlobalSection
+EndGlobal
