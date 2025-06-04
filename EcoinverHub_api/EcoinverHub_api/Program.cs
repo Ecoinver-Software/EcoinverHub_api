@@ -47,10 +47,11 @@ builder.Services.AddAuthentication(options =>
 // 3) Registrar Identity usando nuestras entidades personalizadas
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 6;
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 3;
     options.Password.RequireUppercase = false;
     options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireLowercase = false;
 })
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
@@ -58,14 +59,25 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 // 4) Registrar nuestro servicio de generación/validación de JWT
 builder.Services.AddScoped<JWTService>();
 
-// 5) Resto de servicios (Controladores, Swagger, etc.)
+// 5) Controladores y Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// 6) Configuración de CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()    // Para desarrollo: permite cualquier origen
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
-// 6) Middleware pipeline
+// 7) Middleware pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -74,7 +86,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// ¡IMPORTANTE! Primero Authentication, luego Authorization
+app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
