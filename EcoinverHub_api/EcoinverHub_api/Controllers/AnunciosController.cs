@@ -27,6 +27,14 @@ namespace EcoinverHub_api.Controllers
             // Retornamos solo los que no estén eliminados (“IsDeleted == false”).
             var lista = await _context.Set<Anuncio>()
                                      .Where(a => !a.IsDeleted)
+                                     .Select(a => new
+                                     {
+                                         id=a.Id,
+                                         nombre=a.nombre,
+                                         estado=a.estado,
+                                         contenido=a.contenido
+                                     }
+                                     )
                                      .ToListAsync();
             return Ok(lista);
         }
@@ -36,7 +44,16 @@ namespace EcoinverHub_api.Controllers
         public async Task<IActionResult> GetAnuncioPorId([FromRoute] int id)
         {
             var anuncio = await _context.Set<Anuncio>()
-                                        .FirstOrDefaultAsync(a => a.Id == id && !a.IsDeleted);
+                                        .Where(a => !a.IsDeleted)
+                                     .Select(a => new
+                                     {
+                                         id = a.Id,
+                                         nombre = a.nombre,
+                                         estado = a.estado,
+                                         contenido = a.contenido
+                                     }
+                                     )
+                                     .ToListAsync();
 
             if (anuncio == null)
                 return NotFound(new { Message = "No se ha encontrado el anuncio con el id especificado." });
