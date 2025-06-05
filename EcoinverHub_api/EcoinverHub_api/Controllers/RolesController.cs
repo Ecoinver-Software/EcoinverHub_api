@@ -48,8 +48,12 @@ namespace EcoinverHub_api.Controllers
             });
             if (!resultado.Succeeded)
                 return BadRequest(resultado.Errors);
-                                        
-            return Ok(new { message = "Rol creado" });
+
+            var envio = await _roleManager.Roles
+      .Where(x => x.Name == dto.Name)
+      .FirstOrDefaultAsync();
+
+            return Ok(envio);
 
         }
         [HttpDelete("{id}")]
