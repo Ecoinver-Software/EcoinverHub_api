@@ -9,6 +9,9 @@ using System.Text;
 using Microsoft.AspNetCore.Identity.Data;
 using EcoinverHub_api.Models.Dto;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace EcoinverHub_api.Controllers
 {
@@ -57,7 +60,7 @@ namespace EcoinverHub_api.Controllers
                 return Ok(new
                 {
                     token = token,
-                    
+                    id = user.Id,
                     role = user.Role?.Name
                 });
             }
@@ -66,6 +69,49 @@ namespace EcoinverHub_api.Controllers
                 _logger.LogError(ex, "Error en api/auth/login");
                 return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
             }
+        }
+
+        //AQUI QUIERO EL METODO PARA 
+        [HttpGet("profile")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> GetProfile()
+        {
+            // 1) Se obtiene el claim "sub" o ClaimTypes.NameIdentifier (según config de JWTService).
+            //    En este ejemplo asumimos que en el token pusiste el ClaimTypes.NameIdentifier con el valor de user.Id.
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized(new { message = "Token inválido o expirado" });
+            }
+
+            // 2) Intentamos parsear el ID a entero (típicamente tu Id es int; si fuera string, omites el parseo).
+            if (!int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new { message = "Claim de usuario inválido" });
+            }
+
+            // 3) Buscamos en la base de datos el usuario incluyendo el rol
+            var usuario = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (usuario == null)
+            {
+                return NotFound(new { message = "No se encontró el usuario asociado al token" });
+            }
+
+            // 4) Proyectamos únicamente los campos que queremos devolver
+            var perfil = new
+            {
+                usuario.Id,
+                usuario.UserName,
+                usuario.Email,
+                Roles = usuario.Role != null ? usuario.Role.Name : null,
+                usuario.CreatedAt
+                // (Puedes agregar más campos aquí si los necesitas en el perfil)
+            };
+
+            return Ok(perfil);
         }
 
 
