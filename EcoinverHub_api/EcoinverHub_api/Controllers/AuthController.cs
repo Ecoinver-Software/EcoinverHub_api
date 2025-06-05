@@ -57,7 +57,7 @@ namespace EcoinverHub_api.Controllers
                 return Ok(new
                 {
                     token = token,
-                    
+                    id = user.Id,
                     role = user.Role?.Name
                 });
             }
