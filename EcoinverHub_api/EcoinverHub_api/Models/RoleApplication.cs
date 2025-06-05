@@ -4,8 +4,8 @@ namespace EcoinverHub_api.Models
 {
     public class RoleApplication:BaseModel
     {
-        public int RoleId { get; set; }
-        public ApplicationRole Role { get; set; }
+        public int UserId { get; set; }
+        public ApplicationUser User { get; set; }
 
         public int ApplicationId { get; set; }
         public Application Application { get; set; }

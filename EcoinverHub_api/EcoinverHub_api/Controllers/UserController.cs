@@ -33,6 +33,7 @@ namespace EcoinverHub_api.Controllers
                 user.Id,
                 user.UserName,
                 user.Email,
+                
                 Roles = user.Role.Name // Lista con un solo rol, o vacía si null
             });
 
@@ -64,8 +65,18 @@ namespace EcoinverHub_api.Controllers
             if (!resultado.Succeeded)
                 return BadRequest(resultado.Errors);
 
-            return Ok(new { message = "Usuario creado correctamente", user.Id, user.UserName, Role = rol.Name });
+            // Crear la respuesta con los datos del usuario y el nombre del rol
+            var respuesta = new
+            {
+                id= user.Id,
+                userName = user.UserName,
+                email = user.Email,
+                roles = rol.Name  // Nombre del rol asociado
+            };
+
+            return Ok(respuesta);
         }
+
 
 
         [HttpPut("{id}")]

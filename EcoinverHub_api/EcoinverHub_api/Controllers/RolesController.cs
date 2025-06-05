@@ -25,6 +25,7 @@ namespace EcoinverHub_api.Controllers
                 x.Id,
                 x.Name,
                 x.Description,
+                x.Level,
                 x.NormalizedName,
 
 
@@ -41,6 +42,7 @@ namespace EcoinverHub_api.Controllers
             {
                 Name = dto.Name,
                 Description = dto.Description,
+                Level=dto.Level,
                 NormalizedName = dto.Name.ToUpper()
 
             });
