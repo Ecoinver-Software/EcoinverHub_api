@@ -33,41 +33,12 @@ namespace EcoinverHub_api.Controllers
                 user.Id,
                 user.UserName,
                 user.Email,
-
+                
                 Roles = user.Role.Name // Lista con un solo rol, o vacía si null
             });
 
             return Ok(listaUsuarios);
         }
-
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUsuarioPorId([FromRoute] int id)
-        {
-            // 1) Buscamos el usuario por Id, incluyendo la entidad Role
-            var usuario = await _context.Users
-                                .Include(u => u.Role)
-                                .Where(u => u.Id == id)
-                                .Select(u => new
-                                {
-                                    u.Id,
-                                    u.UserName,
-                                    u.Email,
-                                    Roles = u.Role != null ? u.Role.Name : null
-                                })
-                                .FirstOrDefaultAsync();
-
-            // 2) Si no existe, devolvemos 404
-            if (usuario == null)
-            {
-                return NotFound(new { Message = "No se ha encontrado el usuario con el id especificado" });
-            }
-
-            // 3) Devolvemos el objeto proyectado
-            return Ok(usuario);
-        }
-
-
 
         [HttpPost]
         public async Task<IActionResult> crearUsuario(CreateUsuarioDto dto)
