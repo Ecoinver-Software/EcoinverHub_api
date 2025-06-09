@@ -2,6 +2,7 @@
 using EcoinverHub_api.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using EcoinverHub_api.Models.Identity;
 
 namespace EcoinverHub_api.Data
 {
@@ -15,6 +16,7 @@ namespace EcoinverHub_api.Data
         public DbSet<ApplicationRole> Roles { get; set; }
         public DbSet<Application> Applications { get; set; }
         public DbSet<RoleApplication> RoleApplications { get; set; }
+        public DbSet<Anuncio> Anuncios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -24,9 +26,12 @@ namespace EcoinverHub_api.Data
             builder.Entity<ApplicationRole>(b => b.ToTable("roles"));
             builder.Entity<RoleApplication>(b => b.ToTable("roleapplications"));
             builder.Entity<Application>(b => b.ToTable("applications"));
+            builder.Entity<Anuncio>(b => b.ToTable("anuncios"));
 
             builder.Entity<IdentityUserRole<int>>(b => b.ToTable("userroles"));
+            
         }
+        public DbSet<EcoinverHub_api.Models.Identity.Anuncio> Anuncio { get; set; } = default!;
 
 
 
