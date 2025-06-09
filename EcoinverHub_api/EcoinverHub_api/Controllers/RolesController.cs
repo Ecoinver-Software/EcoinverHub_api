@@ -8,7 +8,7 @@ namespace EcoinverHub_api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class RolesController:ControllerBase
+    public class RolesController : ControllerBase
     {
         public readonly RoleManager<ApplicationRole> _roleManager;
 
@@ -20,7 +20,7 @@ namespace EcoinverHub_api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllRoles()
         {
-            var todosLosRoles =await _roleManager.Roles.Select(x => new
+            var todosLosRoles = await _roleManager.Roles.Select(x => new
             {
                 x.Id,
                 x.Name,
@@ -29,8 +29,8 @@ namespace EcoinverHub_api.Controllers
                 x.NormalizedName,
 
 
-            }).ToListAsync(); 
-           // IQueryable<ApplicationRole>
+            }).ToListAsync();
+            // IQueryable<ApplicationRole>
             return Ok(todosLosRoles);
         }
 
@@ -42,7 +42,7 @@ namespace EcoinverHub_api.Controllers
             {
                 Name = dto.Name,
                 Description = dto.Description,
-                Level=dto.Level,
+                Level = dto.Level,
                 NormalizedName = dto.Name.ToUpper()
 
             });
@@ -50,12 +50,34 @@ namespace EcoinverHub_api.Controllers
                 return BadRequest(resultado.Errors);
 
             var envio = await _roleManager.Roles
-      .Where(x => x.Name == dto.Name)
-      .FirstOrDefaultAsync();
+            .Where(x => x.Name == dto.Name)
+            .FirstOrDefaultAsync();
 
             return Ok(envio);
 
         }
+        [HttpPut("{id}")]
+           public async Task<IActionResult> Actualizar(int id, [FromBody] CreateRoleDto dto)
+        {
+            var rol = await _roleManager.FindByIdAsync(id.ToString());
+            if (rol==null)
+            {
+                return NotFound(new {message="No se ha encontrado el rol"});
+            }
+            rol.Name = dto.Name;
+            rol.Level = dto.Level;
+            rol.Description = dto.Description;
+
+            var envio = await _roleManager.Roles
+          .Where(x => x.Name == dto.Name)
+          .FirstOrDefaultAsync();
+            await _roleManager.UpdateAsync(rol);
+
+            return Ok(rol);
+
+        }
+            
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(int id)
         {

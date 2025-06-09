@@ -83,6 +83,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseStaticFiles();  // <- Aquí habilitas servir archivos estáticos desde wwwroot
 
 app.UseHttpsRedirection();
 

@@ -1,4 +1,5 @@
-﻿using EcoinverHub_api.Data;
+﻿using System.Globalization;
+using EcoinverHub_api.Data;
 using EcoinverHub_api.Models;
 using EcoinverHub_api.Models.Dto.Create;
 using EcoinverHub_api.Models.Dto.Update;
@@ -44,21 +45,44 @@ namespace EcoinverHub_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Crear([FromBody] CreateAplicationDto dto)
+        public async Task<IActionResult> Crear(IFormFile image, [FromForm] string name, [FromForm] string description, [FromForm] string url)
         {
+            if (image==null || image.Length==0)
+            {
+                return BadRequest(new { message = "No se ha encontrado ninguna imgen" });
+
+            }
+            var uploadsFolder = Path.Combine("wwwroot", "uploads");//Comprobamos que la carpeta exista.
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+            var extension = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var extensionImagen = Path.GetExtension(image.FileName).ToLowerInvariant();
+
+            if (!extension.Contains(extensionImagen))//Si no contiene una extensión válida devolvemos un BadRequest.
+            {
+                return BadRequest(new { message = "La extensión de la imgen no es válida" });
+            }
+            var filePath = Path.Combine("wwwroot/uploads", image.FileName);
+            var rutaBaseDatos = Path.Combine("uploads", image.FileName);
+            using(var stream=new FileStream(filePath,FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+
+
             var aplicacion = new Application
             {
-                Name = dto.Name,
-                Description = dto.Description,
-                Url = dto.Url,
-                Icon = dto.Icon
+                Name = name,
+                Description = description,
+                Url = url,
+                Icon = rutaBaseDatos
             };
-
-
-            _context.AddAsync(aplicacion);
+            _context.Applications.Add(aplicacion);
             await _context.SaveChangesAsync();
+            return Ok(new { message = "Se ha guardado correctamente la aplicación" });
 
-            return Ok(aplicacion);
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Editar([FromRoute] int id, [FromBody] UpdateApplicationDto dto)

@@ -25,6 +25,7 @@
     <Folder Include="Migrations\" />
     <Folder Include="Models\Identity\" />
     <Folder Include="Seeders\" />
+    <Folder Include="wwwroot\uploads\" />
   </ItemGroup>
 
 </Project>
