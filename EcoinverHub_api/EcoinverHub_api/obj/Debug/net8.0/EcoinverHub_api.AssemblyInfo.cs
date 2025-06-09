@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EcoinverHub_api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9d94c0664be2a6a1ee5218e4c10127bc2374ec3a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e9201e9fb72db36860eb64652ed6c4a40d64ef24")]
 [assembly: System.Reflection.AssemblyProductAttribute("EcoinverHub_api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EcoinverHub_api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

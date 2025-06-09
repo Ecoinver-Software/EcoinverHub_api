@@ -81,7 +81,7 @@ namespace EcoinverHub_api.Controllers
             };
             _context.Applications.Add(aplicacion);
             await _context.SaveChangesAsync();
-            return Ok(new { message = "Se ha guardado correctamente la aplicación" });
+            return Ok(aplicacion);
 
         }
         [HttpPut("{id}")]
