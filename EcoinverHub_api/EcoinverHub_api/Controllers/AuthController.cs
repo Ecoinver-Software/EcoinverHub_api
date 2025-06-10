@@ -107,7 +107,9 @@ namespace EcoinverHub_api.Controllers
                 usuario.UserName,
                 usuario.Email,
                 Roles = usuario.Role != null ? usuario.Role.Name : null,
-                usuario.CreatedAt
+                usuario.CreatedAt,
+                usuario.lastname,
+                usuario.name
                 // (Puedes agregar más campos aquí si los necesitas en el perfil)
             };
 

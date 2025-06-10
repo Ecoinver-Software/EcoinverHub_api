@@ -7,6 +7,8 @@ namespace EcoinverHub_api.Models
     public DateTime CreatedAt { get; set; }=DateTime.Now;
         // Agregar relación directa con Role
         public int RoleId { get; set; }
+        public string name { get; set; }
+        public string lastname {  get; set; }
         public ApplicationRole Role { get; set; }
     }
 }
