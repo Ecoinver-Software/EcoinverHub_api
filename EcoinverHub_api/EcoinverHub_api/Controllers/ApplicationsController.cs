@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Drawing;
+using System.Globalization;
 using EcoinverHub_api.Data;
 using EcoinverHub_api.Models;
 using EcoinverHub_api.Models.Dto.Create;
@@ -29,6 +30,11 @@ namespace EcoinverHub_api.Controllers
                 x.Description,
                 x.Icon,
                 x.Url,
+                x.Autor,
+                x.Estado,
+                x.FechaActualizacion,
+                x.Version
+               
             }).ToListAsync();
 
             return Ok(aplicaciones);
@@ -45,7 +51,7 @@ namespace EcoinverHub_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Crear(IFormFile image, [FromForm] string name, [FromForm] string description, [FromForm] string url)
+        public async Task<IActionResult> Crear(IFormFile image, [FromForm] string name, [FromForm] string description, [FromForm] string url, [FromForm] string estado, [FromForm] string version, [FromForm] string autor )
         {
             if (image==null || image.Length==0)
             {
@@ -77,7 +83,11 @@ namespace EcoinverHub_api.Controllers
                 Name = name,
                 Description = description,
                 Url = url,
-                Icon = rutaBaseDatos
+                Icon = rutaBaseDatos,
+                Estado=estado,
+                Version=version,
+                Autor=autor,
+                   
             };
             _context.Applications.Add(aplicacion);
             await _context.SaveChangesAsync();
@@ -85,20 +95,61 @@ namespace EcoinverHub_api.Controllers
 
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Editar([FromRoute] int id, [FromBody] UpdateApplicationDto dto)
+        public async Task<IActionResult> Editar([FromRoute] int id, IFormFile? image, [FromForm] string name, [FromForm] string description, [FromForm] string url, [FromForm] string estado, [FromForm] string version, [FromForm] string autor)
         {
             var aplicacion = await _context.Applications.FindAsync(id);
 
-            if (aplicacion==null)
+            aplicacion.Name = name;
+            aplicacion.Description = description;
+            aplicacion.Url = url;
+            aplicacion.Estado = estado;
+            aplicacion.Version = version;
+            aplicacion.Autor = autor;
+
+            if (aplicacion == null)
             {
-                return NotFound(new {message="No se ha encontrado la aplicacion el id especificado"});
+                return NotFound(new { message = "No se ha encontrado la aplicacion el id especificado" });
             }
-            aplicacion.Name = dto.Name;
-            aplicacion.Url = dto.Url;
-            aplicacion.Icon = dto.Icon;
-            aplicacion.Description = dto.Description;
+
+            if (image != null) // Verificamos si se envió una imagen.
+            {
+                var uploadsFolder = Path.Combine("wwwroot", "uploads");
+
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                var extension = new[]
+{
+    ".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff",
+    ".ico", ".svg", ".heif", ".heic", ".raw", ".exr", ".avif", ".dng"
+};
+                var extensionImagen = Path.GetExtension(image.FileName).ToLowerInvariant();
+
+                if (!extension.Contains(extensionImagen)) // Si no contiene una extensión válida, devolvemos un BadRequest.
+                {
+                    return BadRequest(new { message = "La extensión de la imagen no es válida" });
+                }
+
+                var filePath = Path.Combine("wwwroot/uploads", image.FileName);
+                var rutaBaseDatos = Path.Combine("uploads", image.FileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await image.CopyToAsync(stream);
+                }
+
+                aplicacion.Icon = rutaBaseDatos;
+            }
 
             await _context.SaveChangesAsync();
+
+            
+           
+
+            await _context.SaveChangesAsync();
+            
 
             return Ok(aplicacion);
         }
