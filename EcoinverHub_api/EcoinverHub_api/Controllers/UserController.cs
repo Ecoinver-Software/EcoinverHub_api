@@ -33,6 +33,8 @@ namespace EcoinverHub_api.Controllers
                 user.Id,
                 user.UserName,
                 user.Email,
+                user.name,
+                user.lastname,
 
                 Roles = user.Role.Name // Lista con un solo rol, o vacía si null
             });
@@ -53,6 +55,8 @@ namespace EcoinverHub_api.Controllers
                                     u.Id,
                                     u.UserName,
                                     u.Email,
+                                    u.name,
+                                    u.lastname,
                                     Roles = u.Role != null ? u.Role.Name : null
                                 })
                                 .FirstOrDefaultAsync();
@@ -87,6 +91,8 @@ namespace EcoinverHub_api.Controllers
                 UserName = dto.UserName,
                 Email = dto.Email,
                 RoleId = dto.RoleId,
+                name=dto.name,
+                lastname=dto.lastname,
                 CreatedAt = DateTime.Now
             };
 
@@ -97,9 +103,11 @@ namespace EcoinverHub_api.Controllers
             // Crear la respuesta con los datos del usuario y el nombre del rol
             var respuesta = new
             {
-                id= user.Id,
+                id = user.Id,
                 userName = user.UserName,
                 email = user.Email,
+                name = user.name,
+                lastname = user.lastname,
                 roles = rol.Name  // Nombre del rol asociado
             };
 
@@ -121,6 +129,12 @@ namespace EcoinverHub_api.Controllers
 
             if (!string.IsNullOrEmpty(dto.Email))
                 user.Email = dto.Email;
+
+            if (!string.IsNullOrEmpty(dto.name))
+                user.name = dto.name;
+
+            if (!string.IsNullOrEmpty(dto.lastname))
+                user.lastname = dto.lastname;
 
             if (dto.RoleId.HasValue)
             {
