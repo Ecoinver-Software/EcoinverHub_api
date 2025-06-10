@@ -90,3 +90,7 @@ TestResults/
 
 # Entity Framework
 *.edmx.diagram
+
+# Assembly info files (auto-generated)
+**/AssemblyInfo.cs
+**/AssemblyInfoInputs.cache
