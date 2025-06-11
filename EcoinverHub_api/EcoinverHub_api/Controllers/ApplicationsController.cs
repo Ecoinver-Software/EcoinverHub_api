@@ -1,9 +1,5 @@
-﻿using System.Drawing;
-using System.Globalization;
-using EcoinverHub_api.Data;
+﻿using EcoinverHub_api.Data;
 using EcoinverHub_api.Models;
-using EcoinverHub_api.Models.Dto.Create;
-using EcoinverHub_api.Models.Dto.Update;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -63,7 +59,11 @@ namespace EcoinverHub_api.Controllers
             {
                 Directory.CreateDirectory(uploadsFolder);
             }
-            var extension = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var extension = new[]
+   {
+    ".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff",
+    ".ico", ".svg", ".heif", ".heic", ".raw", ".exr", ".avif", ".dng"
+};
             var extensionImagen = Path.GetExtension(image.FileName).ToLowerInvariant();
 
             if (!extension.Contains(extensionImagen))//Si no contiene una extensión válida devolvemos un BadRequest.
@@ -99,18 +99,18 @@ namespace EcoinverHub_api.Controllers
         {
             var aplicacion = await _context.Applications.FindAsync(id);
 
+            
+
+            if (aplicacion == null)
+            {
+                return NotFound(new { message = "No se ha encontrado la aplicacion el id especificado" });
+            }
             aplicacion.Name = name;
             aplicacion.Description = description;
             aplicacion.Url = url;
             aplicacion.Estado = estado;
             aplicacion.Version = version;
             aplicacion.Autor = autor;
-
-            if (aplicacion == null)
-            {
-                return NotFound(new { message = "No se ha encontrado la aplicacion el id especificado" });
-            }
-
             if (image != null) // Verificamos si se envió una imagen.
             {
                 var uploadsFolder = Path.Combine("wwwroot", "uploads");

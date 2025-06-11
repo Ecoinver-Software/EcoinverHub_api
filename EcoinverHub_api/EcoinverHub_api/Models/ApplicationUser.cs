@@ -9,6 +9,7 @@ namespace EcoinverHub_api.Models
         public int RoleId { get; set; }
         public string name { get; set; }
         public string lastname {  get; set; }
+        public string Empresa { get; set; }
         public ApplicationRole Role { get; set; }
     }
 }

@@ -35,6 +35,7 @@ namespace EcoinverHub_api.Controllers
                 user.Email,
                 user.name,
                 user.lastname,
+                user.Empresa,
 
                 Roles = user.Role.Name // Lista con un solo rol, o vacía si null
             });
@@ -57,6 +58,7 @@ namespace EcoinverHub_api.Controllers
                                     u.Email,
                                     u.name,
                                     u.lastname,
+                                    u.Empresa,
                                     Roles = u.Role != null ? u.Role.Name : null
                                 })
                                 .FirstOrDefaultAsync();
@@ -93,6 +95,7 @@ namespace EcoinverHub_api.Controllers
                 RoleId = dto.RoleId,
                 name=dto.name,
                 lastname=dto.lastname,
+                Empresa = dto.Empresa,
                 CreatedAt = DateTime.Now
             };
 
@@ -108,12 +111,12 @@ namespace EcoinverHub_api.Controllers
                 email = user.Email,
                 name = user.name,
                 lastname = user.lastname,
+                empresa=user.Empresa,
                 roles = rol.Name  // Nombre del rol asociado
             };
 
             return Ok(respuesta);
         }
-
 
 
         [HttpPut("{id}")]
@@ -135,6 +138,9 @@ namespace EcoinverHub_api.Controllers
 
             if (!string.IsNullOrEmpty(dto.lastname))
                 user.lastname = dto.lastname;
+
+            if (!string.IsNullOrEmpty(dto.Empresa))
+                user.Empresa = dto.Empresa;
 
             if (dto.RoleId.HasValue)
             {
@@ -160,6 +166,7 @@ namespace EcoinverHub_api.Controllers
 
             return Ok(new { message = "Usuario actualizado" });
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(int id)
         {
