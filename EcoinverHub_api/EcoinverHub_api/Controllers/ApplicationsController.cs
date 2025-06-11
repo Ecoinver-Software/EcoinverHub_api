@@ -84,10 +84,11 @@ namespace EcoinverHub_api.Controllers
                 Description = description,
                 Url = url,
                 Icon = rutaBaseDatos,
-                Estado=estado,
-                Version=version,
-                Autor=autor,
-                   
+                Estado = estado,
+                Version = version,
+                Autor = autor,
+                FechaActualizacion = DateTime.Now
+
             };
             _context.Applications.Add(aplicacion);
             await _context.SaveChangesAsync();
@@ -111,6 +112,7 @@ namespace EcoinverHub_api.Controllers
             aplicacion.Estado = estado;
             aplicacion.Version = version;
             aplicacion.Autor = autor;
+            aplicacion.FechaActualizacion = DateTime.Now;
             if (image != null) // Verificamos si se envió una imagen.
             {
                 var uploadsFolder = Path.Combine("wwwroot", "uploads");
