@@ -9,6 +9,13 @@ using EcoinverHub_api.Models;
 using EcoinverHub_api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+//builder.WebHost.ConfigureKestrel(options =>
+//{
+//    options.Listen(System.Net.IPAddress.Any, 443, listenOptions =>
+//    {
+//        listenOptions.UseHttps("/ssl/server.pfx", "temp123");
+//    });
+//});
 
 // 1) Configurar DbContext con MySQL (Pomelo)
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -78,11 +85,10 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // 7) Middleware pipeline
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 app.UseStaticFiles();  // <- Aquí habilitas servir archivos estáticos desde wwwroot
 
 app.UseHttpsRedirection();
