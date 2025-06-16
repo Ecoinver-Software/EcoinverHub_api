@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
 //builder.WebHost.ConfigureKestrel(options =>
 //{
 //    options.Listen(System.Net.IPAddress.Any, 443, listenOptions =>
@@ -35,18 +36,14 @@ builder.Services.AddAuthentication(options =>
 {
     var jwtSection = builder.Configuration.GetSection("Jwt");
     var key = Encoding.UTF8.GetBytes(jwtSection["Key"]);
-
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
-
         ValidateIssuer = true,
         ValidIssuer = jwtSection["Issuer"],
-
         ValidateAudience = true,
         ValidAudience = jwtSection["Audience"],
-
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
@@ -86,13 +83,10 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // 7) Middleware pipeline
+app.UseSwagger();
+app.UseSwaggerUI();
 
-    app.UseSwagger();
-    app.UseSwaggerUI();
-
-app.UseStaticFiles(); // Sirve wwwroot automáticamente
-
-// O mapea específicamente /uploads a wwwroot/uploads:
+// CONFIGURACIÓN DE ARCHIVOS ESTÁTICOS - SOLO UNA VEZ
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
@@ -100,12 +94,16 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = ""
 });
 
-app.UseHttpsRedirection();
+// Comentar UseHttpsRedirection si tienes problemas con SSL
+// app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
+
+// CONFIGURAR URLs ESPECÍFICAS - ESTO ES CLAVE
+app.Urls.Add("https://172.16.60.254:8443");
+app.Urls.Add("http://172.16.60.254:8080");
+
 app.Run();

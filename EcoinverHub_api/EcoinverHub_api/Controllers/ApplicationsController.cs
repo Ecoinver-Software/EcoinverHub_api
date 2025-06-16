@@ -47,39 +47,55 @@ namespace EcoinverHub_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Crear(IFormFile image, [FromForm] string name, [FromForm] string description, [FromForm] string url, [FromForm] string estado, [FromForm] string version, [FromForm] string autor )
+        public async Task<IActionResult> Crear(IFormFile image, [FromForm] string name, [FromForm] string description, [FromForm] string url, [FromForm] string estado, [FromForm] string version, [FromForm] string autor)
         {
-            if (image==null || image.Length==0)
+            if (image == null || image.Length == 0)
             {
-                return BadRequest(new { message = "No se ha encontrado ninguna imgen" });
-
+                return BadRequest(new { message = "No se ha encontrado ninguna imagen" });
             }
-            var uploadsFolder = Path.Combine("wwwroot", "uploads");//Comprobamos que la carpeta exista.
+
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            Console.WriteLine($"Directorio actual: {Directory.GetCurrentDirectory()}");
+            Console.WriteLine($"Carpeta uploads: {uploadsFolder}");
+            Console.WriteLine($"¿Existe el directorio? {Directory.Exists(uploadsFolder)}");
+
             if (!Directory.Exists(uploadsFolder))
             {
                 Directory.CreateDirectory(uploadsFolder);
+                Console.WriteLine("Directorio creado");
             }
+
             var extension = new[]
-   {
-    ".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff",
-    ".ico", ".svg", ".heif", ".heic", ".raw", ".exr", ".avif", ".dng"
-};
+            {
+        ".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff",
+        ".ico", ".svg", ".heif", ".heic", ".raw", ".exr", ".avif", ".dng"
+    };
+
             var extensionImagen = Path.GetExtension(image.FileName).ToLowerInvariant();
 
-            if (!extension.Contains(extensionImagen))//Si no contiene una extensión válida devolvemos un BadRequest.
+            if (!extension.Contains(extensionImagen))
             {
-                return BadRequest(new { message = "La extensión de la imgen no es válida" });
+                return BadRequest(new { message = "La extensión de la imagen no es válida" });
             }
-             uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+
             var filePath = Path.Combine(uploadsFolder, image.FileName);
-            
             var rutaBaseDatos = Path.Combine("uploads", image.FileName);
-            using(var stream=new FileStream(filePath,FileMode.Create))
+
+            Console.WriteLine($"Ruta completa del archivo: {filePath}");
+
+            try
             {
-                await image.CopyToAsync(stream);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await image.CopyToAsync(stream);
+                }
+                Console.WriteLine("Archivo guardado exitosamente");
             }
-            Console.WriteLine($"Directorio actual: {Directory.GetCurrentDirectory()}");
-            Console.WriteLine($"Ruta completa: {Path.GetFullPath(filePath)}");
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al guardar archivo: {ex.Message}");
+                return BadRequest(new { message = $"Error al guardar archivo: {ex.Message}" });
+            }
 
             var aplicacion = new Application
             {
@@ -91,12 +107,11 @@ namespace EcoinverHub_api.Controllers
                 Version = version,
                 Autor = autor,
                 FechaActualizacion = DateTime.Now
-
             };
+
             _context.Applications.Add(aplicacion);
             await _context.SaveChangesAsync();
             return Ok(aplicacion);
-
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Editar([FromRoute] int id, IFormFile? image, [FromForm] string name, [FromForm] string description, [FromForm] string url, [FromForm] string estado, [FromForm] string version, [FromForm] string autor)
