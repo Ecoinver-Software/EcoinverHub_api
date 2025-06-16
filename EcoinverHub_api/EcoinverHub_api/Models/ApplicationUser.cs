@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace EcoinverHub_api.Models
 {
@@ -11,5 +12,10 @@ namespace EcoinverHub_api.Models
         public string lastname {  get; set; }
         public string Empresa { get; set; }
         public ApplicationRole Role { get; set; }
+
+        public int? EquipoId { get; set; }
+        [ForeignKey(nameof(EquipoId))]
+        public Equipos Equipo { get; set; }
+
     }
 }

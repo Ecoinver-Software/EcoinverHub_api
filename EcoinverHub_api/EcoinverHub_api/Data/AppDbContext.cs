@@ -17,7 +17,7 @@ namespace EcoinverHub_api.Data
         public DbSet<Application> Applications { get; set; }
         public DbSet<RoleApplication> RoleApplications { get; set; }
         public DbSet<Anuncio> Anuncios { get; set; }
-
+        public DbSet<Equipos> Equipos { get; set; } 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

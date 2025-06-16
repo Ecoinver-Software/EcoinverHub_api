@@ -30,9 +30,11 @@ namespace EcoinverHub_api.Controllers
                                      .Select(a => new
                                      {
                                          id=a.Id,
-                                         nombre=a.nombre,
-                                         estado=a.estado,
-                                         contenido=a.contenido
+                                         creador=a.Creador,
+                                         nombre=a.Nombre,
+                                         estado=a.Estado,
+                                         contenido=a.Contenido,
+                                         createdAt = a.CreatedAt
                                      }
                                      )
                                      .ToListAsync();
@@ -48,9 +50,10 @@ namespace EcoinverHub_api.Controllers
                                      .Select(a => new
                                      {
                                          id = a.Id,
-                                         nombre = a.nombre,
-                                         estado = a.estado,
-                                         contenido = a.contenido
+                                         creador = a.Creador,
+                                         nombre = a.Nombre,
+                                         estado = a.Estado,
+                                         contenido = a.Contenido
                                      }
                                      )
                                      .ToListAsync();
@@ -66,18 +69,20 @@ namespace EcoinverHub_api.Controllers
         public async Task<IActionResult> CrearAnuncio([FromBody] CreateAnuncioDto dto)
         {
             // Validar que el DTO no venga vacío en sus campos requeridos
-            if (string.IsNullOrWhiteSpace(dto.nombre) ||
-                string.IsNullOrWhiteSpace(dto.estado) ||
-                string.IsNullOrWhiteSpace(dto.contenido))
+            if (string.IsNullOrWhiteSpace(dto.Nombre) ||
+                string.IsNullOrWhiteSpace(dto.Creador) ||
+                string.IsNullOrWhiteSpace(dto.Estado) ||
+                string.IsNullOrWhiteSpace(dto.Contenido))
             {
                 return BadRequest(new { Message = "Debe proporcionar nombre, estado y contenido del anuncio." });
             }
 
             var nuevo = new Anuncio
             {
-                nombre = dto.nombre.Trim(),
-                estado = dto.estado.Trim(),
-                contenido = dto.contenido.Trim(),
+                Creador = dto.Creador.Trim(),
+                Nombre = dto.Nombre.Trim(),
+                Estado = dto.Estado.Trim(),
+                Contenido = dto.Contenido.Trim(),
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 IsDeleted = false
@@ -91,9 +96,10 @@ namespace EcoinverHub_api.Controllers
             return Ok(new
             {
                 id = nuevo.Id,
-                nombre = nuevo.nombre,
-                estado = nuevo.estado,
-                contenido = nuevo.contenido,
+                creador = nuevo.Creador,
+                nombre = nuevo.Nombre,
+                estado = nuevo.Estado,
+                contenido = nuevo.Contenido,
                 createdAt = nuevo.CreatedAt,
                 updatedAt = nuevo.UpdatedAt
             });
@@ -109,13 +115,13 @@ namespace EcoinverHub_api.Controllers
 
             // Solo modificamos los campos que vengan “no nulos o no vacíos”
             if (!string.IsNullOrWhiteSpace(dto.nombre))
-                anuncio.nombre = dto.nombre.Trim();
+                anuncio.Nombre = dto.nombre.Trim();
 
             if (!string.IsNullOrWhiteSpace(dto.estado))
-                anuncio.estado = dto.estado.Trim();
+                anuncio.Estado = dto.estado.Trim();
 
             if (!string.IsNullOrWhiteSpace(dto.contenido))
-                anuncio.contenido = dto.contenido.Trim();
+                anuncio.Contenido = dto.contenido.Trim();
 
             anuncio.UpdatedAt = DateTime.UtcNow;
 
