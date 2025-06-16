@@ -70,13 +70,16 @@ namespace EcoinverHub_api.Controllers
             {
                 return BadRequest(new { message = "La extensión de la imgen no es válida" });
             }
-            var filePath = Path.Combine("wwwroot/uploads", image.FileName);
+             uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            var filePath = Path.Combine(uploadsFolder, image.FileName);
+            
             var rutaBaseDatos = Path.Combine("uploads", image.FileName);
             using(var stream=new FileStream(filePath,FileMode.Create))
             {
                 await image.CopyToAsync(stream);
             }
-
+            Console.WriteLine($"Directorio actual: {Directory.GetCurrentDirectory()}");
+            Console.WriteLine($"Ruta completa: {Path.GetFullPath(filePath)}");
 
             var aplicacion = new Application
             {

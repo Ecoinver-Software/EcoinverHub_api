@@ -1,12 +1,13 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using EcoinverHub_api.Data;
 using EcoinverHub_api.Models;
 using EcoinverHub_api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 //builder.WebHost.ConfigureKestrel(options =>
@@ -89,7 +90,15 @@ var app = builder.Build();
     app.UseSwagger();
     app.UseSwaggerUI();
 
-app.UseStaticFiles();  // <- Aquí habilitas servir archivos estáticos desde wwwroot
+app.UseStaticFiles(); // Sirve wwwroot automáticamente
+
+// O mapea específicamente /uploads a wwwroot/uploads:
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
+    RequestPath = ""
+});
 
 app.UseHttpsRedirection();
 
