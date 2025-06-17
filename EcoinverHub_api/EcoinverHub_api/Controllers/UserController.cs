@@ -36,6 +36,7 @@ namespace EcoinverHub_api.Controllers
                 user.name,
                 user.lastname,
                 user.Empresa,
+                user.EquipoId,
 
                 Roles = user.Role.Name // Lista con un solo rol, o vacía si null
             });
@@ -59,6 +60,7 @@ namespace EcoinverHub_api.Controllers
                                     u.name,
                                     u.lastname,
                                     u.Empresa,
+                                    u.EquipoId,
                                     Roles = u.Role != null ? u.Role.Name : null
                                 })
                                 .FirstOrDefaultAsync();
@@ -167,6 +169,20 @@ namespace EcoinverHub_api.Controllers
             return Ok(new { message = "Usuario actualizado" });
         }
 
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Cambiar(int id, [FromBody] int? equipoId)
+        {
+            var usuario = await _userManager.FindByIdAsync(id.ToString());
+            if (usuario==null)
+            {
+                return NotFound(new { message = "No se ha encontrado el usuario con el id especificado" });
+            }
+
+            usuario.EquipoId = equipoId;
+            await _userManager.UpdateAsync(usuario);
+
+            return Ok(usuario);
+        }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(int id)
         {

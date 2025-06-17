@@ -86,18 +86,20 @@ namespace EcoinverHub_api.Controllers
             await _context.SaveChangesAsync();
             await _context.SaveChangesAsync();
             var equipo = await _context.Equipos
-    .Include(x => x.JefeEquipo)
-    .Where(x => x.Id == equipos.Id)
-    .Select(x => new {
-        x.Id,
-        x.Nombre,
-        NombreJefe = x.JefeEquipo.name,
-        x.Empresa
-    })
-    .FirstOrDefaultAsync(); // <-- devuelve un solo objeto
+            .Include(x => x.JefeEquipo)
+            .Where(x => x.Id == equipos.Id)
+            .Select(x => new {
+            x.Id,
+            x.Nombre,
+            NombreJefe = x.JefeEquipo.name,
+            x.Empresa
+             })
+            .FirstOrDefaultAsync(); // <-- devuelve un solo objeto
 
             return Ok(equipo);
         }
+        
+        
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
