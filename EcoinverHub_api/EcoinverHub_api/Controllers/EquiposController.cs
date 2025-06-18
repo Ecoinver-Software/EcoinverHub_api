@@ -98,16 +98,27 @@ namespace EcoinverHub_api.Controllers
 
             return Ok(equipo);
         }
-        
-        
+
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var equipo=await _context.Equipos.FindAsync(id);
+            var equipo = await _context.Equipos.FindAsync(id);
             if (equipo == null)
             {
                 return NotFound(new { message = "No se ha encontrado el equipo con el ID especificado" });
             }
+
+            // Desasignar usuarios del equipo
+            var usuariosDelEquipo = await _context.Users
+                .Where(u => u.EquipoId == id)
+                .ToListAsync();
+
+            foreach (var usuario in usuariosDelEquipo)
+            {
+                usuario.EquipoId = null;
+            }
+
             _context.Equipos.Remove(equipo);
             await _context.SaveChangesAsync();
             return Ok(new { message = "Equipo eliminado correctamente" });
