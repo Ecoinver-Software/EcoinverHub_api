@@ -1,4 +1,5 @@
-﻿using EcoinverHub_api.Models;
+﻿using EcoinverHub_api.Data;
+using EcoinverHub_api.Models;
 using EcoinverHub_api.Models.Dto.Create;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +12,11 @@ namespace EcoinverHub_api.Controllers
     public class RolesController : ControllerBase
     {
         public readonly RoleManager<ApplicationRole> _roleManager;
-
-        public RolesController(RoleManager<ApplicationRole> roleManager)
+        public readonly AppDbContext _context;
+        public RolesController(RoleManager<ApplicationRole> roleManager,AppDbContext context)
         {
             _roleManager = roleManager;
+            _context = context;
         }
 
         [HttpGet]
@@ -86,6 +88,12 @@ namespace EcoinverHub_api.Controllers
             if (rol==null)
             {
                 return NotFound(new {message="No existe el rol con el id especificado"});
+            }
+            var busqueda = await _context.Users.AnyAsync(x => x.RoleId == rol.Id);
+            if (busqueda)
+            {
+                return BadRequest(new {message="Este rol tiene usuarios asignados"});
+
             }
 
             var result = await _roleManager.DeleteAsync(rol);

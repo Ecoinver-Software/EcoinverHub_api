@@ -25,6 +25,8 @@ namespace EcoinverHub_api.Services
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
         new Claim(ClaimTypes.Name, user.UserName ?? ""),
         new Claim(ClaimTypes.Role, roleName),
+        new Claim("name", user.name),
+        new Claim("lastName",user.lastname),
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         new Claim(JwtRegisteredClaimNames.Iat,
             new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString(),
